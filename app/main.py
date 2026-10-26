@@ -7,12 +7,28 @@ def prompt_user():
 def handle_invalid_command(command):
     print(f"{command}: command not found")
 
-def evaluate_command(stream):
-    command, *args = stream.split()
-    if command == "exit":
-        sys.exit(0)
-    elif command == "echo":
-        print(" ".join(args))
+def exit_command():
+    sys.exit(0)
+
+def echo_command(args):
+    print(" ".join(args))
+
+def type_command(args):
+    if args[0] in builtin_commands:
+        print(f"{args[0]}: builtin command")
+    else:
+        print(f"{args[0]}: not found")
+
+builtin_commands = {
+    "exit": exit_command,
+    "echo": echo_command,
+    "type": type_command,
+}
+
+def evaluate_command(command):
+    command, *args = command.split()
+    if command in builtin_commands:
+        builtin_commands[command](args)
     else:
         handle_invalid_command(command)
 
