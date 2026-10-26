@@ -21,12 +21,20 @@ def type_command(args):
         print(f"{args[0]} is a shell builtin")
     else: 
         for path_dir in path_dirs:
-            local_path = os.path.join(path_dir, args[0])
-            if os.path.exists(local_path):
-                if os.access(local_path, os.X_OK):
-                    return print(f"{args[0]} is {local_path}")
+            path_candidate = os.path.join(path_dir, args[0])
+            if os.path.exists(path_candidate):
+                if os.access(path_candidate, os.X_OK):
+                    return print(f"{args[0]} is {path_candidate}")
         print(f"{args[0]}: not found")
 
+def run_executable(args):
+     for path_dir in path_dirs:
+            path_candidate = os.path.join(path_dir, args[0])
+            if os.path.exists(path_candidate):
+                if os.access(path_candidate, os.X_OK):
+                    os.execv(path_candidate, args[1:])
+                
+    
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
