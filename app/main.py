@@ -37,11 +37,20 @@ def find_executable(args):
 def pwd_command(_args):
     print(os.getcwd())
 
+def cd_command(args):
+    arg = args[0]
+    if os.path.exists(arg):
+        os.chdir(arg)
+    else:
+        print(f"cd: {arg}: No such file or directory")  
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
     "type": type_command,
-    "pwd": pwd_command,}
+    "pwd": pwd_command,
+    "cd": cd_command,
+}
 
 def evaluate_command(command_string):
     command, *args = command_string.split()
