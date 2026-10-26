@@ -19,20 +19,20 @@ def echo_command(args):
 def type_command(args):
     if args[0] in builtin_commands:
         print(f"{args[0]} is a shell builtin")
-    else: 
-        for path_dir in path_dirs:
-            path_candidate = os.path.join(path_dir, args[0])
-            if os.path.exists(path_candidate):
-                if os.access(path_candidate, os.X_OK):
-                    return print(f"{args[0]} is {path_candidate}")
-        print(f"{args[0]}: not found")
+    else:
+        executable = find_executable(args): 
+        if executable:
+            print(f"{args[0]} is {executable}")
+        else:
+            print(f"{args[0]}: not found")
 
-def run_executable(args):
+def find_executable(args):
      for path_dir in path_dirs:
             path_candidate = os.path.join(path_dir, args[0])
             if os.path.exists(path_candidate):
                 if os.access(path_candidate, os.X_OK):
-                    os.execv(path_candidate, args[1:])
+                    return path_candidate
+                    # os.execv(path_candidate, args[1:])
                 
     
 builtin_commands = {
@@ -41,12 +41,16 @@ builtin_commands = {
     "type": type_command,
 }
 
-def evaluate_command(command):
-    command, *args = command.split()
+def evaluate_command(command_string):
+    command, *args = command_string.split()
     if command in builtin_commands:
         builtin_commands[command](args)
     else:
-        handle_invalid_command(command)
+        executable = find_executable([command])
+        if executable:
+            os.execv(executable, args)
+        else:                               
+            handle_invalid_command(command_string)
 
 def run_repl():
     command = prompt_user()
