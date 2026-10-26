@@ -7,7 +7,7 @@ def prompt_user():
 def handle_invalid_command(command):
     print(f"{command}: command not found")
 
-def exit_command():
+def exit_command(_args)):
     sys.exit(0)
 
 def echo_command(args):
