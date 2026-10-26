@@ -39,7 +39,11 @@ def pwd_command(_args):
 
 def cd_command(args):
     arg = args[0]
-    if arg.startswith("/"):
+    if arg.startswith("~"):
+        home = os.environ.get("HOME", "")
+        os.chdir(home)
+        cd_command([arg[2:]])
+    elif arg.startswith("/"):
         if os.path.exists(arg):
             os.chdir(arg)
         else:
