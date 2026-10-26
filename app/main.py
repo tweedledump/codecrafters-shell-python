@@ -39,10 +39,25 @@ def pwd_command(_args):
 
 def cd_command(args):
     arg = args[0]
-    if os.path.exists(arg):
-        os.chdir(arg)
+    if arg.startswith("/"):
+        if os.path.exists(arg):
+            os.chdir(arg)
+        else:
+            print(f"cd: {arg}: No such file or directory")
+    elif arg.startswith("./"):
+        cd_command([arg[2:]])
+    elif arg.startswith(".."):
+        os.chdir(os.pardir)
+        cd_command([arg[3:]])
     else:
-        print(f"cd: {arg}: No such file or directory")  
+        target = os.path.join(os.getcwd(), arg)
+        if os.path.exists(target):
+            os.chdir(target)
+        else:
+            print(f"cd: {arg}: No such file or directory")    
+
+
+        
 
 builtin_commands = {
     "exit": exit_command,
