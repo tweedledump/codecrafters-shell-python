@@ -1,4 +1,5 @@
 import sys
+import os
 
 path_dirs = os.environ.get("PATH", "").split(":")
 
