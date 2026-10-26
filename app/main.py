@@ -20,19 +20,19 @@ def type_command(args):
     if args[0] in builtin_commands:
         print(f"{args[0]} is a shell builtin")
     else:
-        executable = find_executable(args): 
+        executable = find_executable(args) 
         if executable:
             print(f"{args[0]} is {executable}")
         else:
             print(f"{args[0]}: not found")
 
 def find_executable(args):
-     for path_dir in path_dirs:
+    for path_dir in path_dirs:
             path_candidate = os.path.join(path_dir, args[0])
             if os.path.exists(path_candidate):
                 if os.access(path_candidate, os.X_OK):
                     return path_candidate
-                    # os.execv(path_candidate, args[1:])
+    return None # os.execv(path_candidate, args[1:])
                 
     
 builtin_commands = {
