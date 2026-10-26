@@ -34,7 +34,9 @@ def find_executable(args):
                     return path_candidate
     return None # os.execv(path_candidate, args[1:])
                 
-    
+def pwd_command(_args):
+    print(os.getcwd())
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
