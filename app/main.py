@@ -48,7 +48,7 @@ def evaluate_command(command_string):
     else:
         executable = find_executable([command])
         if executable:
-            os.execv(executable, [command] + args)
+            os.spawnv(os.P_WAIT, executable, [command] + args)
         else:                               
             handle_invalid_command(command_string)
 
