@@ -15,7 +15,7 @@ def echo_command(args):
 
 def type_command(args):
     if args[0] in builtin_commands:
-        print(f"{args[0]}: builtin command")
+        print(f"{args[0]} is a shell builtin")
     else:
         print(f"{args[0]}: not found")
 
