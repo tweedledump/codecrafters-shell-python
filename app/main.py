@@ -1,5 +1,7 @@
 import sys
 
+path_dirs = os.environ.get("PATH", "").split(":")
+
 def prompt_user():
     sys.stdout.write("$ ")
     return input()
@@ -16,7 +18,12 @@ def echo_command(args):
 def type_command(args):
     if args[0] in builtin_commands:
         print(f"{args[0]} is a shell builtin")
-    else:
+    else: 
+        for path_dir in path_dirs:
+            local_path = os.path.join(path_dir, args[0])
+            if os.path.exists(local_path):
+                if os.access(local_path, os.X_OK):
+                    return print(f"{args[0]} is {local_path}")
         print(f"{args[0]}: not found")
 
 builtin_commands = {
