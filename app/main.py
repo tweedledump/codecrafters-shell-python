@@ -41,7 +41,7 @@ builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
     "type": type_command,
-}
+    "pwd": pwd_command,}
 
 def evaluate_command(command_string):
     command, *args = command_string.split()
