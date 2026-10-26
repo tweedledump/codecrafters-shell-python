@@ -7,12 +7,14 @@ def prompt_user():
 def handle_invalid_command(command):
     print(f"{command}: command not found")
 
-def evaluate_command(command):
-    match command:
-        case "exit":
-            sys.exit(0)
-        case _:
-            handle_invalid_command(command)
+def evaluate_command(stream):
+    command, *args = stream.split()
+    if command == "exit":
+        sys.exit(0)
+    elif command == "echo":
+        print(" ".join(args))
+    else:
+        handle_invalid_command(command)
 
 def run_repl():
     command = prompt_user()
