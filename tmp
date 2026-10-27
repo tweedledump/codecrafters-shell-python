@@ -1,1 +1,7 @@
-woopsie daisy
+README.md
+app
+codecrafters.yml
+pyproject.toml
+tmp
+uv.lock
+your_program.sh

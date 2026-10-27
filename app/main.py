@@ -1,5 +1,6 @@
 import sys
 import os
+import subprocess
 from contextlib import redirect_stdout, redirect_stderr, nullcontext
 STDOUT = sys.stdout
 path_dirs = os.environ.get("PATH", "").split(":")
@@ -131,7 +132,12 @@ def evaluate_command(command_string):
         else:
             executable = find_executable([command])
             if executable:
-                os.spawnv(os.P_WAIT, executable, [command] + args)
+                subprocess.run(
+                    [command, *args],
+                    executable=executable,
+                    stdout=out if out_path else None,  # open file, or None = inherit
+                    stderr=err if err_path else None,
+                )
             else:                               
                 handle_invalid_command(command_string)
 
