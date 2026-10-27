@@ -1,15 +1,13 @@
+import readline
 import sys
 import os
 import subprocess
 from contextlib import redirect_stdout, redirect_stderr, nullcontext
+
 STDOUT = sys.stdout
+STDERR = sys.stderr
 path_dirs = os.environ.get("PATH", "").split(":")
 
-
-def prompt_user():
-    sys.stdout = STDOUT
-    sys.stdout.write("$ ")
-    return input()
 
 def handle_invalid_command(command):
     print(f"{command}: command not found")
@@ -63,7 +61,6 @@ def cd_command(args):
             os.chdir(target)
         else:
             print(f"cd: {arg}: No such file or directory")    
-
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
@@ -71,6 +68,37 @@ builtin_commands = {
     "pwd": pwd_command,
     "cd": cd_command,
 }
+def all_commands():
+    names =set(builtin_commands.keys())
+    # for directory in os.environ.get("PATH", "").split(os.pathsep):
+    #     if not directory or not os.path.isdir(directory):
+    #         continue
+    #     for name in os.listdir(directory):
+    #         path = os.path.join(directory, name)
+    #         if os.path.isfile(path) and os.access(path, os.X_OK):
+    #             names.add(name)
+    return sorted(names)
+
+def completer(text, state):
+    # text = prefix being completed; state = 0, 1, 2, ... until None
+    matches = [cmd for cmd in all_commands() if cmd.startswith(text)]
+    return matches[state] if state < len(matches) else None
+
+def setup_readline():
+    readline.set_completer(completer)
+    # GNU readline
+    readline.parse_and_bind("tab: complete")
+    # macOS libedit (Python's readline on Darwin)
+    readline.parse_and_bind("bind ^I rl_complete")
+
+def prompt_user():
+    sys.stdout = STDOUT
+    sys.stderr = STDERR
+    line = input("$ ")
+    return line
+
+
+
 
 def lex(stream: str)-> list[str]:
     tokens = []
@@ -157,13 +185,11 @@ def evaluate_command(command_string):
 def run_repl():
     command = prompt_user()
     evaluate_command(command)
-    # should i have a print phase and return all the messages: no AI says real shells redeirect and print is printig to stdout
 
 def main():
+    setup_readline()
     while True:
         run_repl()
-        
-
-
+    
 if __name__ == "__main__":
     main()
