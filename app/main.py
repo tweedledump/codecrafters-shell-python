@@ -71,8 +71,31 @@ builtin_commands = {
     "cd": cd_command,
 }
 
+def lex(stream: str)-> list[str]:
+    tokens = []
+    current_token = []
+    in_single = False
+    in_double = False
+    i = 0
+    while i < len(stream):
+        ch = stream[i]
+        if ch == "'" and not in_double:
+            in_single = not in_single
+        elif ch == '"' and not in_single:
+            in_double = not in_double
+        elif ch.isspace() and not in_single and not in_double:
+            if current_token:
+                tokens.append("".join(current_token))
+                current_token = []
+        else:
+            current_token.append(ch)
+        i += 1
+    if current_token:
+        tokens.append("".join(current_token))
+    return tokens
+
 def evaluate_command(command_string):
-    command, *args = command_string.split()
+    command, *args = lex(command_string)
     if command in builtin_commands:
         builtin_commands[command](args)
     else:
@@ -85,6 +108,7 @@ def evaluate_command(command_string):
 def run_repl():
     command = prompt_user()
     evaluate_command(command)
+    # should i have a print phase and return all the messages
 
 def main():
     while True:
