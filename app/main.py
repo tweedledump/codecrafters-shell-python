@@ -70,8 +70,9 @@ builtin_commands = {
 }
 all_commands= set(builtin_commands.keys())
 for path_dir in path_dirs:
-    executables= os.listdir(path_dir)
-    all_commands.update(executables)
+    try:
+        executables= os.listdir(path_dir)
+        all_commands.update(executables)
 all_commands = sorted(all_commands)
 
 def completer(text, state):
