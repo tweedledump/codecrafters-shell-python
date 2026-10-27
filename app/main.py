@@ -106,6 +106,7 @@ def handle_redirects(raw):
     out_path = None
     err_path = None
     append_out=False
+    append_err = False
     i = 0
     while i < len(raw):
         token = raw[i]
@@ -116,21 +117,25 @@ def handle_redirects(raw):
         elif token in [">", "1>"]:
             i += 1
             out_path = raw[i]
+        elif token == "2>>":
+            i += 1
+            err_path = raw[i]  
+            append_err = True          
         elif token == "2>":
             i += 1
             err_path = raw[i]            
         else:
             peeled.append(token)
         i += 1 
-    return peeled, out_path, append_out, err_path
+    return peeled, out_path, append_out, err_path, append_err
 
 def evaluate_command(command_string):
     raw_tokens = lex(command_string)
-    peeled_tokens, out_path, append_out, err_path = handle_redirects(raw_tokens)
+    peeled_tokens, out_path, append_out, err_path, append_err = handle_redirects(raw_tokens)
     command, *args = peeled_tokens
     #set io context
     out = open(out_path, "a" if append_out else "w") if out_path else nullcontext()
-    err = open(err_path, "w") if err_path else nullcontext()
+    err = open(err_path, "a" if append_err else "w") if err_path else nullcontext()
     with (
     redirect_stdout(out) if out_path else nullcontext(),
     redirect_stderr(err) if err_path else nullcontext(),
