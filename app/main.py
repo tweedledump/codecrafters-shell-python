@@ -76,6 +76,8 @@ def lex(stream: str)-> list[str]:
     i = 0
     while i < len(stream):
         ch = stream[i]
+        if ch == "\\" and in_single:
+            current_token.append(ch)
         if ch == "\\": #and not in quotes
             i += 1
             next_ch = stream[i]
