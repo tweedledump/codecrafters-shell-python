@@ -1,9 +1,12 @@
 import sys
 import os
-
+from contextlib import redirect_stdout, redirect_stderr, nullcontext
+STDOUT = sys.stdout
 path_dirs = os.environ.get("PATH", "").split(":")
 
+
 def prompt_user():
+    sys.stdout = STDOUT
     sys.stdout.write("$ ")
     return input()
 
@@ -78,7 +81,7 @@ def lex(stream: str)-> list[str]:
         ch = stream[i]
         if ch == "\\" and in_single:
             current_token.append(ch)
-        elif ch == "\\": #and not in quotes
+        elif ch == "\\": #escaping is same in or out of double quotes
             i += 1
             next_ch = stream[i]
             current_token.append(next_ch)
@@ -97,21 +100,45 @@ def lex(stream: str)-> list[str]:
         tokens.append("".join(current_token))
     return tokens
 
+def handle_redirects(raw):
+    peeled = []
+    out_path = None
+    err_path = None
+    i = 0
+    while i < len(raw):
+        token = raw[i]
+        if token in [">", "1>"]:
+            i += 1
+            out_path = raw[i]    
+        else:
+            peeled.append(token)
+        i += 1 
+    return peeled, out_path, err_path
+
 def evaluate_command(command_string):
-    command, *args = lex(command_string)
-    if command in builtin_commands:
-        builtin_commands[command](args)
-    else:
-        executable = find_executable([command])
-        if executable:
-            os.spawnv(os.P_WAIT, executable, [command] + args)
-        else:                               
-            handle_invalid_command(command_string)
+    raw_tokens = lex(command_string)
+    peeled_tokens, out_path, err_path = handle_redirects(raw_tokens)
+    command, *args = peeled_tokens
+    #set io context
+    out = open(out_path, "w") if out_path else nullcontext()
+    err = open(err_path, "w") if err_path else nullcontext()
+    with (
+    redirect_stdout(out) if out_path else nullcontext(),
+    redirect_stderr(err) if err_path else nullcontext(),
+    ):
+        if command in builtin_commands:
+            builtin_commands[command](args)
+        else:
+            executable = find_executable([command])
+            if executable:
+                os.spawnv(os.P_WAIT, executable, [command] + args)
+            else:                               
+                handle_invalid_command(command_string)
 
 def run_repl():
     command = prompt_user()
     evaluate_command(command)
-    # should i have a print phase and return all the messages
+    # should i have a print phase and return all the messages: no AI says real shells redeirect and print is printig to stdout
 
 def main():
     while True:
