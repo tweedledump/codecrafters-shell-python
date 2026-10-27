@@ -73,6 +73,8 @@ for path_dir in path_dirs:
     try:
         executables= os.listdir(path_dir)
         all_commands.update(executables)
+    except:
+        pass
 all_commands = sorted(all_commands)
 
 def completer(text, state):
