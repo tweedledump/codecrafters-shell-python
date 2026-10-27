@@ -70,18 +70,11 @@ builtin_commands = {
 }
 def all_commands():
     names =set(builtin_commands.keys())
-    # for directory in os.environ.get("PATH", "").split(os.pathsep):
-    #     if not directory or not os.path.isdir(directory):
-    #         continue
-    #     for name in os.listdir(directory):
-    #         path = os.path.join(directory, name)
-    #         if os.path.isfile(path) and os.access(path, os.X_OK):
-    #             names.add(name)
     return sorted(names)
 
 def completer(text, state):
     # text = prefix being completed; state = 0, 1, 2, ... until None
-    matches = [cmd for cmd in all_commands() if cmd.startswith(text)]
+    matches = [cmd + " " for cmd in all_commands() if cmd.startswith(text)]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
