@@ -60,9 +60,6 @@ def cd_command(args):
         else:
             print(f"cd: {arg}: No such file or directory")    
 
-
-        
-
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
@@ -79,7 +76,11 @@ def lex(stream: str)-> list[str]:
     i = 0
     while i < len(stream):
         ch = stream[i]
-        if ch == "'" and not in_double:
+        if ch == "\\": #and not in quotes
+            i += 1
+            next_ch = stream[i]
+            current_token.append(next_ch)
+        elif ch == "'" and not in_double:
             in_single = not in_single
         elif ch == '"' and not in_single:
             in_double = not in_double
