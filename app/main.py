@@ -82,7 +82,7 @@ def setup_readline():
     # GNU readline
     readline.parse_and_bind("tab: complete")
     # macOS libedit (Python's readline on Darwin)
-    readline.parse_and_bind("bind ^I rl_complete")
+    # readline.parse_and_bind("bind ^I rl_complete") #this eats 'b's mysteriously on the CI machine, comment for CI
 
 def prompt_user():
     sys.stdout = STDOUT
