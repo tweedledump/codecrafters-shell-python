@@ -110,7 +110,10 @@ def handle_redirects(raw):
         token = raw[i]
         if token in [">", "1>"]:
             i += 1
-            out_path = raw[i]    
+            out_path = raw[i]
+        elif token == "2>":
+            i += 1
+            err_path = raw[i]            
         else:
             peeled.append(token)
         i += 1 
