@@ -69,7 +69,12 @@ builtin_commands = {
     "cd": cd_command,
 }
 def all_commands():
-    names =set(builtin_commands.keys())
+    names = set(builtin_commands.keys())
+    for path_dir in path_dirs:
+        executables = { name for name in os.listdir(path_dir) if os.access(os.path.join(path_dir, name) ,os.X_OK) }
+        names = names.update(executables)
+    # names.update(["okay"])
+    # print(names)
     return sorted(names)
 
 def completer(text, state):
