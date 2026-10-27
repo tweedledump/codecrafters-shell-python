@@ -68,19 +68,15 @@ builtin_commands = {
     "pwd": pwd_command,
     "cd": cd_command,
 }
-def all_commands():
-    names = set(builtin_commands.keys())
-    for path_dir in path_dirs:
-        # executables = { name for name in os.listdir(path_dir) if os.access(os.path.join(path_dir, name) ,os.X_OK) }
-        executables= os.listdir(path_dir)
-        names = names.update(executables)
-    # names.update(["okay"])
-    # print(names)
-    return sorted(names)
+all_commands= set(builtin_commands.keys())
+for path_dir in path_dirs:
+    executables= os.listdir(path_dir)
+    all_commands.update(executables)
+all_commands = sorted(all_commands)
 
 def completer(text, state):
     # text = prefix being completed; state = 0, 1, 2, ... until None
-    matches = [cmd + " " for cmd in all_commands() if cmd.startswith(text)]
+    matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
@@ -88,7 +84,7 @@ def setup_readline():
     # GNU readline
     readline.parse_and_bind("tab: complete")
     # macOS libedit (Python's readline on Darwin)
-    readline.parse_and_bind("bind ^I rl_complete") #this eats 'b's mysteriously on the CI machine, comment for CI
+    # readline.parse_and_bind("bind ^I rl_complete") #this eats 'b's mysteriously on the CI machine, comment for CI
 
 def prompt_user():
     sys.stdout = STDOUT
