@@ -80,6 +80,11 @@ def parse_args(args):
         i += 1
     return flagged, ordered
 
+def complete_command(args):
+    flagged, _ordered = parse_args(args)
+    if "p" in flagged:
+        print(f"complete: {flagged['p']}: no complete specification")
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
@@ -97,11 +102,6 @@ def register_commands():
         except:
             pass
     global_commands = sorted(all_commands)
-
-def complete_command(args):
-    flagged, _ordered = parse_args(args)
-    if "p" in flagged:
-        print(f"complete: {flagged["p"]}: no complete specification")
 
 def completer(text, state):
     if readline.get_begidx() == 0:
