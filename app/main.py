@@ -31,12 +31,17 @@ def type_command(args):
             print(f"{args[0]}: not found")
 
 def find_executable(args):
+    name = args[0]
+    if "/" in name:
+        path = name if os.path.isabs(name) else os.path.join(os.getcwd(), name)
+        if os.path.isfile(path) and os.access(path, os.X_OK):
+            return path
+        return None
     for path_dir in PATH_DIRS:
-            path_candidate = os.path.join(path_dir, args[0])
-            if os.path.exists(path_candidate):
-                if os.access(path_candidate, os.X_OK):
-                    return path_candidate
-    return None 
+        path_candidate = os.path.join(path_dir, name)
+        if os.path.isfile(path_candidate) and os.access(path_candidate, os.X_OK):
+            return path_candidate
+    return None
                 
 def pwd_command(_args):
     print(os.getcwd())
@@ -111,6 +116,15 @@ def register_commands():
     global_commands = sorted(all_commands)
 
 def completer(text, state):
+    buffer_tokens = readline.get_line_buffer().split()
+    if buffer_tokens[0] in completer_scripts:
+        result = subprocess.run(
+                    [completer_scripts[buffer_tokens[0]], *buffer_tokens[1:]],
+                    executable=executable,
+                    capture_output=True,  # Captures both stdout and stderr
+                    text=True     
+                    )
+        return result.stdout
     if readline.get_begidx() == 0:
         matches = [cmd + " " for cmd in global_commands if cmd.startswith(text)]
     elif "/" in text:
