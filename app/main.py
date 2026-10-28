@@ -7,7 +7,7 @@ from contextlib import redirect_stdout, redirect_stderr, nullcontext
 IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
-path_dirs = os.environ.get("PATH", "").split(":")
+PATH_DIRS = os.environ.get("PATH", "").split(":")
 
 
 def handle_invalid_command(command):
@@ -30,7 +30,7 @@ def type_command(args):
             print(f"{args[0]}: not found")
 
 def find_executable(args):
-    for path_dir in path_dirs:
+    for path_dir in PATH_DIRS:
             path_candidate = os.path.join(path_dir, args[0])
             if os.path.exists(path_candidate):
                 if os.access(path_candidate, os.X_OK):
@@ -70,7 +70,7 @@ builtin_commands = {
     "cd": cd_command,
 }
 all_commands= set(builtin_commands.keys())
-for path_dir in path_dirs:
+for path_dir in PATH_DIRS:
     try:
         executables= os.listdir(path_dir)
         all_commands.update(executables)
@@ -81,26 +81,24 @@ all_commands = sorted(all_commands)
 def completer(text, state):
     if readline.get_begidx() == 0:
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
+    elif "/" in text:
+        path, chs = text.rsplit("/", 1)
+        matches = [path + "/" + file + " " for file in os.listdir(os.path.join(os.getcwd(), path)) if file.startswith(chs)]
     else: 
         matches = [file + " " for file in os.listdir(os.getcwd()) if text in file]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
     readline.set_completer(completer)
-    # GNU readline
-    readline.parse_and_bind("tab: complete")
-    # macOS libedit (Python's readline on Darwin)
-    if(IS_MAC):
-        readline.parse_and_bind("bind ^I rl_complete") #this eats 'b's mysteriously on the CI machine, comment for CI
+    readline.parse_and_bind("tab: complete")            # GNU readline
+    if(IS_MAC):                                         # macOS libedit (Python's readline on Darwin)
+        readline.parse_and_bind("bind ^I rl_complete")  # eats 'b's on the CI machine libedit implementation
 
 def prompt_user():
     sys.stdout = STDOUT
     sys.stderr = STDERR
     line = input("$ ")
     return line
-
-
-
 
 def lex(stream: str)-> list[str]:
     tokens = []
