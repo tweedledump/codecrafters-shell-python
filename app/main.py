@@ -124,7 +124,7 @@ def completer(text, state):
                         capture_output=True,  # Captures both stdout and stderr
                         text=True     
                         )
-            completer._cleaned = [line.strip() + "" for line in result.stdout.splitlines() if line.startswith(text)]
+            completer._cleaned = [line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)]
         try: 
             return completer._cleaned[state]
         except:
