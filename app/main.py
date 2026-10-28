@@ -119,8 +119,9 @@ def completer(text, state):
     buffer_tokens = readline.get_line_buffer().split()
     if buffer_tokens[0] in completer_scripts:
         if state == 0:
+            print(buffer_tokens[-1] == text)
             result = subprocess.run(
-                        [completer_scripts[buffer_tokens[0]], *buffer_tokens[1:]],
+                        [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] ],
                         capture_output=True,  # Captures both stdout and stderr
                         text=True     
                         )
