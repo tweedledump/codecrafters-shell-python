@@ -64,12 +64,17 @@ def cd_command(args):
             os.chdir(target)
         else:
             print(f"cd: {arg}: No such file or directory")    
+
+def complete_command(args):
+    pass
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
     "type": type_command,
     "pwd": pwd_command,
     "cd": cd_command,
+    "complete": complete_command
 }
 all_commands= set(builtin_commands.keys())
 for path_dir in PATH_DIRS:
