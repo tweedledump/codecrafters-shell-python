@@ -41,9 +41,11 @@ def pwd_command(_args):
     print(os.getcwd())
 
 def cd_command(args):
+    home = os.environ.get("HOME", "")
+    if not args:
+        return os.chdir(home)
     arg = args[0]
     if arg.startswith("~"):
-        home = os.environ.get("HOME", "")
         os.chdir(home)
         cd_command([arg[2:]])
     elif arg.startswith("/"):
@@ -83,9 +85,13 @@ def completer(text, state):
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     elif "/" in text:
         path, prefix = text.rsplit("/", 1)
-        matches = [(path + "/" + file + " ") for file in os.listdir(os.path.join(os.getcwd(), path)) if file.startswith(prefix)]
+        matches = [(path + "/" + file + (" " if os.path.isfile(os.path.join(os.getcwd(),file)) else "/")) 
+                    for file in os.listdir(os.path.join(os.getcwd(), path)) 
+                    if file.startswith(prefix)]
     else: 
-        matches = [file + " " for file in os.listdir(os.getcwd()) if text in file]
+        matches = [file + (" " if os.path.isfile(os.path.join(os.getcwd(),file)) else "/") 
+                    for file in os.listdir(os.getcwd()) 
+                    if text in file]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
