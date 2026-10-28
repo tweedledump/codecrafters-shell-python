@@ -4,6 +4,7 @@ import os
 import subprocess
 from contextlib import redirect_stdout, redirect_stderr, nullcontext
 
+IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
 path_dirs = os.environ.get("PATH", "").split(":")
@@ -78,8 +79,11 @@ for path_dir in path_dirs:
 all_commands = sorted(all_commands)
 
 def completer(text, state):
-    # text = prefix being completed; state = 0, 1, 2, ... until None
-    matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
+    whole_line = readline.get_line_buffer()
+    if len(text) == len(whole_line):
+        matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
+    else: 
+        matches = [file + " " for file in os.listdir(os.getcwd()) if file.startswith(text.split()[-1])]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
@@ -87,7 +91,8 @@ def setup_readline():
     # GNU readline
     readline.parse_and_bind("tab: complete")
     # macOS libedit (Python's readline on Darwin)
-    # readline.parse_and_bind("bind ^I rl_complete") #this eats 'b's mysteriously on the CI machine, comment for CI
+    if(IS_MAC):
+        readline.parse_and_bind("bind ^I rl_complete") #this eats 'b's mysteriously on the CI machine, comment for CI
 
 def prompt_user():
     sys.stdout = STDOUT
@@ -127,7 +132,7 @@ def lex(stream: str)-> list[str]:
         tokens.append("".join(current_token))
     return tokens
 
-def handle_redirects(raw):
+def peel_redirects(raw):
     peeled = []
     out_path = None
     err_path = None
@@ -157,7 +162,7 @@ def handle_redirects(raw):
 
 def evaluate_command(command_string):
     raw_tokens = lex(command_string)
-    peeled_tokens, out_path, append_out, err_path, append_err = handle_redirects(raw_tokens)
+    peeled_tokens, out_path, append_out, err_path, append_err = peel_redirects(raw_tokens)
     command, *args = peeled_tokens
     #set io context
     out = open(out_path, "a" if append_out else "w") if out_path else nullcontext()
