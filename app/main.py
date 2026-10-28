@@ -82,8 +82,8 @@ def completer(text, state):
     if readline.get_begidx() == 0:
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     elif "/" in text:
-        path, chs = text.rsplit("/", 1)
-        matches = [path + "/" + file + " " for file in os.listdir(os.path.join(os.getcwd(), path)) if file.startswith(chs)]
+        path, prefix = text.rsplit("/", 1)
+        matches = [path + "/" + file + " " for file in os.listdir(os.path.join(os.getcwd(), path)) if file.startswith(prefix)]
     else: 
         matches = [file + " " for file in os.listdir(os.getcwd()) if text in file]
     return matches[state] if state < len(matches) else None
