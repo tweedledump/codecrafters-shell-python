@@ -101,7 +101,7 @@ def register_commands():
             all_commands.update(executables)
         except:
             pass
-    global_commands = sorted(all_commands)
+    global global_commands = sorted(all_commands)
 
 def completer(text, state):
     if readline.get_begidx() == 0:
