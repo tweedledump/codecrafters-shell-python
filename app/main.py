@@ -72,7 +72,7 @@ def parse_args(args):
     i = 0
     while i < len(args):
         arg = args[i]
-        if args.startswith("-"):
+        if arg.startswith("-"):
             i += 1
             flagged[arg[1:]] = args[i]
         else:
