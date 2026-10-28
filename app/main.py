@@ -120,8 +120,8 @@ def completer(text, state):
     buffer_tokens = buffer.split()
     if buffer_tokens[0] in completer_scripts:
         if state == 0:
-            os.environ.COMP_LINE = buffer
-            os.environ.COMP_POINT = len(buffer)
+            os.environ["COMP_LINE"] = buffer
+            os.environ["COMP_POINT"] = len(buffer)
             result = subprocess.run(
                         [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] if len(buffer_tokens) > 2 else "" ],
                         capture_output=True,  # Captures both stdout and stderr
