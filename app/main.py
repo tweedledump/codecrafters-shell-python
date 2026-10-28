@@ -35,7 +35,7 @@ def find_executable(args):
             if os.path.exists(path_candidate):
                 if os.access(path_candidate, os.X_OK):
                     return path_candidate
-    return None # os.execv(path_candidate, args[1:])
+    return None 
                 
 def pwd_command(_args):
     print(os.getcwd())
@@ -83,13 +83,14 @@ def completer(text, state):
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     elif "/" in text:
         path, prefix = text.rsplit("/", 1)
-        matches = [path + "/" + file + " " for file in os.listdir(os.path.join(os.getcwd(), path)) if file.startswith(prefix)]
+        matches = [(path + "/" + file + " ") for file in os.listdir(os.path.join(os.getcwd(), path)) if file.startswith(prefix)]
     else: 
         matches = [file + " " for file in os.listdir(os.getcwd()) if text in file]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
     readline.set_completer(completer)
+    readline.set_completer_delims(" \t\n")
     readline.parse_and_bind("tab: complete")            # GNU readline
     if(IS_MAC):                                         # macOS libedit (Python's readline on Darwin)
         readline.parse_and_bind("bind ^I rl_complete")  # eats 'b's on the CI machine libedit implementation
