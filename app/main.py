@@ -80,10 +80,16 @@ def parse_args(args):
         i += 1
     return flagged, ordered
 
+completer_scripts = dict()
 def complete_command(args):
-    flagged, _ordered = parse_args(args)
-    if "p" in flagged:
-        print(f"complete: {flagged['p']}: no completion specification")
+    # flagged, _ordered = parse_args(args)
+    if args[0] == "-p":
+        if args[1] in completer_scripts:
+            print(f"complete -C '{completer_scripts[args[1]]}' {args[1]} ")
+        else:
+            print(f"complete: {args[1]}: no completion specification")
+    elif args[0] == "-C":
+        completer_scripts[args[2]] = args[1]
 
 builtin_commands = {
     "exit": exit_command,
