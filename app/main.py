@@ -85,7 +85,7 @@ def completer(text, state):
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     elif "/" in text:
         path, prefix = text.rsplit("/", 1)
-        matches = [(path + "/" + file + (" " if os.path.isfile(os.path.join(os.getcwd(),file)) else "/")) 
+        matches = [(path + "/" + file + (" " if os.path.isfile(os.path.join(os.getcwd(),path, file)) else "/")) 
                     for file in os.listdir(os.path.join(os.getcwd(), path)) 
                     if file.startswith(prefix)]
     else: 
