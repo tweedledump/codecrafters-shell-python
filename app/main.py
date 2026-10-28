@@ -117,10 +117,9 @@ def register_commands():
 
 def completer(text, state):
     buffer_tokens = readline.get_line_buffer().split()
-    if buffer_tokens[0] in completer_scripts:
+    if buffer_tokens[0] in completer_scripts and state == 0:
         result = subprocess.run(
                     [completer_scripts[buffer_tokens[0]], *buffer_tokens[1:]],
-                    executable=executable,
                     capture_output=True,  # Captures both stdout and stderr
                     text=True     
                     )
