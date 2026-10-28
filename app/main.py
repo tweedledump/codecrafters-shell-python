@@ -83,7 +83,7 @@ def completer(text, state):
     if len(text) == len(whole_line):
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     else: 
-        matches = [file + " " for file in os.listdir(os.getcwd()) if file.startswith(text.split()[-1])]
+        matches = [file + " " for file in os.listdir(os.getcwd()) if file.startswith(text)]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
