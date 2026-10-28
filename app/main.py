@@ -83,7 +83,7 @@ def parse_args(args):
 def complete_command(args):
     flagged, _ordered = parse_args(args)
     if "p" in flagged:
-        print(f"complete: {flagged['p']}: no complete specification")
+        print(f"complete: {flagged['p']}: no completion specification")
 
 builtin_commands = {
     "exit": exit_command,
