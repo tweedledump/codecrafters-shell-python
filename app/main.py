@@ -117,13 +117,18 @@ def register_commands():
 
 def completer(text, state):
     buffer_tokens = readline.get_line_buffer().split()
-    if buffer_tokens[0] in completer_scripts and state == 0:
-        result = subprocess.run(
-                    [completer_scripts[buffer_tokens[0]], *buffer_tokens[1:]],
-                    capture_output=True,  # Captures both stdout and stderr
-                    text=True     
-                    )
-        return [result.stdout]
+    if buffer_tokens[0] in completer_scripts:
+        if state == 0:
+            result = subprocess.run(
+                        [completer_scripts[buffer_tokens[0]], *buffer_tokens[1:]],
+                        capture_output=True,  # Captures both stdout and stderr
+                        text=True     
+                        )
+            completer._cleaned = [line.strip() + "" for line in result.stdout.splitlines() if line.startswith(text)]
+        try: 
+            return completer._cleaned[state]
+        except:
+            return None
     if readline.get_begidx() == 0:
         matches = [cmd + " " for cmd in global_commands if cmd.startswith(text)]
     elif "/" in text:
@@ -136,6 +141,7 @@ def completer(text, state):
                     for file in os.listdir(os.getcwd()) 
                     if text in file]
     return matches[state] if state < len(matches) else None
+completer.cleaned = []
 
 def setup_readline():
     register_commands()
