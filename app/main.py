@@ -124,7 +124,7 @@ def completer(text, state):
                     capture_output=True,  # Captures both stdout and stderr
                     text=True     
                     )
-        return result.stdout
+        return [result.stdout]
     if readline.get_begidx() == 0:
         matches = [cmd + " " for cmd in global_commands if cmd.startswith(text)]
     elif "/" in text:
