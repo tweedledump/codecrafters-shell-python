@@ -8,6 +8,7 @@ IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
+global_commands = None
 
 
 def handle_invalid_command(command):
@@ -65,8 +66,19 @@ def cd_command(args):
         else:
             print(f"cd: {arg}: No such file or directory")    
 
-def complete_command(args):
-    pass
+def parse_args(args):
+    flagged = dict()
+    ordered = []
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if args.startswith("-"):
+            i += 1
+            flagged[arg[1:]] = args[i]
+        else:
+            ordered.append(arg)
+        i += 1
+    return flagged, ordered
 
 builtin_commands = {
     "exit": exit_command,
@@ -76,18 +88,24 @@ builtin_commands = {
     "cd": cd_command,
     "complete": complete_command
 }
-all_commands= set(builtin_commands.keys())
-for path_dir in PATH_DIRS:
-    try:
-        executables= os.listdir(path_dir)
-        all_commands.update(executables)
-    except:
-        pass
-all_commands = sorted(all_commands)
+def register_commands():
+    all_commands= set(builtin_commands.keys())
+    for path_dir in PATH_DIRS:
+        try:
+            executables= os.listdir(path_dir)
+            all_commands.update(executables)
+        except:
+            pass
+    global_commands = sorted(all_commands)
+
+def complete_command(args):
+    flagged, _ordered = parse_args(args)
+    if "p" in flagged:
+        print(f"complete: {flagged["p"]}: no complete specification")
 
 def completer(text, state):
     if readline.get_begidx() == 0:
-        matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
+        matches = [cmd + " " for cmd in global_commands if cmd.startswith(text)]
     elif "/" in text:
         path, prefix = text.rsplit("/", 1)
         matches = [(path + "/" + file + (" " if os.path.isfile(os.path.join(os.getcwd(),path, file)) else "/")) 
@@ -100,6 +118,7 @@ def completer(text, state):
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
+    register_commands()
     readline.set_completer(completer)
     readline.set_completer_delims(" \t\n")
     readline.parse_and_bind("tab: complete")            # GNU readline
