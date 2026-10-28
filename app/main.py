@@ -94,6 +94,7 @@ builtin_commands = {
     "complete": complete_command
 }
 def register_commands():
+    global global_commands
     all_commands= set(builtin_commands.keys())
     for path_dir in PATH_DIRS:
         try:
@@ -101,7 +102,7 @@ def register_commands():
             all_commands.update(executables)
         except:
             pass
-    global global_commands = sorted(all_commands)
+    global_commands = sorted(all_commands)
 
 def completer(text, state):
     if readline.get_begidx() == 0:
