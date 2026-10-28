@@ -79,11 +79,10 @@ for path_dir in path_dirs:
 all_commands = sorted(all_commands)
 
 def completer(text, state):
-    whole_line = readline.get_line_buffer()
-    if len(text) == len(whole_line):
+    if readline.get_begidx() == 0:
         matches = [cmd + " " for cmd in all_commands if cmd.startswith(text)]
     else: 
-        matches = [file[len(text):] + " " for file in os.listdir(os.getcwd()) if file in text]
+        matches = [file + " " for file in os.listdir(os.getcwd()) if text in file]
     return matches[state] if state < len(matches) else None
 
 def setup_readline():
