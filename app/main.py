@@ -109,7 +109,8 @@ def complete_command(args):
 
 def jobs_command(args):
     for j in jobs:
-        print(f"[{j.job_number}]+  {j.status.ljust(24)}{j.command_string}")
+        recency = "+" if j is jobs[-1] else "-" if j is jobs[-2] else " "
+        print(f"[{j.job_number}]{recency}  {j.status.ljust(24)}{j.command_string}")
 
 builtin_commands = {
     "exit": exit_command,
