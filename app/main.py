@@ -8,8 +8,9 @@ IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
-sys.stderr = open(os.devnull,  "w")
-
+null_fd = os.open(os.devnull, os.O_WRONLY)
+os.dup2(null_fd, sys.stderr.fileno())
+os.close(null_fd)
 
 global_commands = None
 completer_scripts = dict()
