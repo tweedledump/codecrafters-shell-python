@@ -121,7 +121,8 @@ def completer(text, state):
     if buffer_tokens[0] in completer_scripts:
         if state == 0:
             result = subprocess.run(
-                        [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] if len(buffer_tokens) > 2 else "" ],
+                        [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] ],
+                        # [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] if len(buffer_tokens) > 2 else "" ],
                         capture_output=True,  # Captures both stdout and stderr
                         text=True,  
                         env = {
@@ -129,7 +130,7 @@ def completer(text, state):
                             "COMP_POINT": str(len(buffer))
                         }   
                         )
-            completer._cleaned = [line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)]
+            completer._cleaned = sorted([line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)])
         try: 
             return completer._cleaned[state]
         except:
