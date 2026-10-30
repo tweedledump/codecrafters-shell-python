@@ -4,23 +4,17 @@ import os
 import subprocess
 from contextlib import redirect_stdout, redirect_stderr, nullcontext
 
+def handle_unraisable(args): #CI garbage collection is too aggressive and creates CI specific errors.
+    if isinstance(args.exc_value, OSError) and args.exc_value.errno == 9:
+        return # just avoid this one error
+    sys.__unraisablehook__(args)
+
+sys.unraisablehook = handle_unraisable
+
 IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
-# null_fd = os.open(os.devnull, os.O_WRONLY) #CI garbage collection is too aggressive and creates CI specific errors. Turning it down.
-# os.dup2(null_fd, sys.stderr.fileno())
-# os.close(null_fd)
-
-def handle_unraisable(args):
-    # Check if the exception is an OSError with Errno 9 (Bad file descriptor)
-    if isinstance(args.exc_value, OSError) and args.exc_value.errno == 9:
-        return  # Safely swallow and ignore this specific background error
-    
-    # For any other unraisable errors, use Python's default behavior
-    sys.__unraisablehook__(args)
-
-sys.unraisablehook = handle_unraisable
 
 global_commands = None
 completer_scripts = dict()
@@ -135,7 +129,8 @@ def jobs_command(autoreap=False):
         if should_reap:
             jobs.remove(j)
     
-
+def history_command():
+    pass
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
@@ -143,7 +138,8 @@ builtin_commands = {
     "pwd": pwd_command,
     "cd": cd_command,
     "complete": complete_command,
-    "jobs": jobs_command
+    "jobs": jobs_command,
+    "history": history_command
 }
 def register_commands():
     global global_commands
