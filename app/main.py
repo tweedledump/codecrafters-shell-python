@@ -126,7 +126,7 @@ def completer(text, state):
                         text=True,  
                         env = {
                             "COMP_LINE": buffer,
-                            "COMP_POINT": len(buffer)
+                            "COMP_POINT": str(len(buffer))
                         }   
                         )
             completer._cleaned = [line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)]
