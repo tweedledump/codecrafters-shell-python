@@ -261,7 +261,7 @@ def handle_pipeline(command_stages):
         if prev_proc:
             prev_proc.stdout.close()
         prev_proc = proc
-    stdout, _stderr = prev_proc.communicate()
+    stdout, _stderr = prev_proc.wait()
     print(stdout.decode('utf-8').rstrip())
 
 
