@@ -8,8 +8,10 @@ IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
+
 global_commands = None
 completer_scripts = dict()
+
 jobs=list()
 class Job():
     job_counter = 1
@@ -252,12 +254,28 @@ def background_pass(peeled):
     else:
         return False, peeled
 
+def handle_pipeline(command_stages):
+    p1 = subprocess.Popen(command_stages[0], stdout=subprocess.PIPE)
+    p2 = subprocess.Popen(command_stages[1], stdin = p1.stdout, stdout=subprocess.PIPE)
+    p1.stdout.close()
+    output = p2.communicate()[0]
+    print(output)
+    # for stage_num, stage_command in enumerate(command_stages):
+    #     (r,w) = os.pipe()
+    #     command_tokens = lex(stage_command)
+    #     proc = subprocess.Popen(command_tokens, stdin)
+
+
 def evaluate_command(command_string):
-    if command_string.strip() == "":
-        return
     raw_tokens = lex(command_string)     
+    # pipes happen before redirects
+    if "|" in raw_tokens:
+        commands = command_string.split("|")
+        lexed = [lex(command) for command in commands]
+        return handle_pipeline(lexed)
+        
     peeled_tokens, out_path, append_out, err_path, append_err = peel_redirects(raw_tokens)
-    should_fork, bg_tokens =background_pass(peeled_tokens)
+    is_background, bg_tokens = background_pass(peeled_tokens)
     command, *args = bg_tokens
     #set io context
     out = open(out_path, "a" if append_out else "w") if out_path else nullcontext()
@@ -268,12 +286,11 @@ def evaluate_command(command_string):
     ):
         if command in builtin_commands:
             builtin_commands[command](args)
-            # spawn a subshell to handle background 
+            # spawn a subshell to handle background process
         else:
             executable = find_executable([command])
             if executable:
-                if should_fork:
-                    global job_number
+                if is_background:
                     p = subprocess.Popen([command, *args],
                         executable=executable,
                         stdout=out if out_path else None,  # open file, or None = inherit
@@ -294,6 +311,8 @@ def evaluate_command(command_string):
 
 def run_repl():
     command = prompt_user()
+    if command.strip() == "":
+        return
     evaluate_command(command)
 
 def main():
