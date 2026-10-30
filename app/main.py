@@ -107,11 +107,13 @@ def complete_command(args):
     elif args[0] == "-r":
         completer_scripts.pop(args[1])
 
-def jobs_command(args):
+def jobs_command(autoreap=False):
     for j in jobs[:]:
         should_reap = j.process.poll() is not None
         recency = "+" if j is jobs[-1] else "-" if j is jobs[-2] else " "
-        print(f"[{j.job_number}]{recency}  {('Done' if should_reap else 'Running').ljust(24)}{j.command_string[:-1] if should_reap else j.command_string}")
+        if not autoreap or (autoreap and should_reap):
+            print(f"[{j.job_number}]{recency}  {('Done' if should_reap else 'Running').ljust(24)}{j.command_string[:-1] if should_reap else j.command_string}")
+        
         if should_reap:
             jobs.remove(j)
     
@@ -180,6 +182,7 @@ def setup_readline():
 def prompt_user():
     sys.stdout = STDOUT
     sys.stderr = STDERR
+    jobs_command(autoreap= True)
     line = input("$ ")
     return line
 
