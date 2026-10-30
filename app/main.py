@@ -256,16 +256,31 @@ def background_pass(peeled):
 
 def handle_pipeline(command_stages):
     prev_proc = None
+    prev_read_end = None
+    prev_write_end = None
     for command_stage in command_stages:
-        proc = subprocess.Popen(command_stage, stdout=subprocess.PIPE, stdin = prev_proc.stdout if prev_proc else None)
+        (r,w) = os.pipe()
+        print(r,w)
+        command, *args = command_stage
+        # if command in builtin_commands:
+        #     with redirect_stdout(subprocess.PIPE):
+        #         builtin_commands[command](args)
+        #     sys.stdout.flush()
+        #     proc = None
+        # else:
+            # proc = subprocess.Popen(command_stage, stdout=subprocess.PIPE, stdin = prev_proc.stdout if prev_proc else None)
+        proc = subprocess.Popen(command_stage, stdout=w, stdin = prev_read_end)
         if prev_proc:
-            prev_proc.stdout.close()
+            try:
+                os.close(prev_write_end)
+            except:
+                pass
         prev_proc = proc
-    # stdout, _stderr = prev_proc.communicate()
-    # print(stdout.decode('utf-8').rstrip())
-    for line in proc.stdout:
-        print(line.decode('utf-8').rstrip())
-    proc.wait()
+        prev_read_end, prev_write_end = r, w
+    os.close(prev_write_end)
+    with os.fdopen(prev_read_end, "rb") as stream:
+        for line in stream:
+            print(line.decode('utf-8').rstrip())
 
 def evaluate_command(command_string):
     raw_tokens = lex(command_string)     
