@@ -72,18 +72,18 @@ def cd_command(args):
             print(f"cd: {arg}: No such file or directory")    
 
 # def parse_args(args):
-    flagged = dict()
-    ordered = []
-    i = 0
-    while i < len(args):
-        arg = args[i]
-        if arg.startswith("-"):
-            i += 1
-            flagged[arg[1:]] = args[i]
-        else:
-            ordered.append(arg)
-        i += 1
-    return flagged, ordered
+    # flagged = dict()
+    # ordered = []
+    # i = 0
+    # while i < len(args):
+    #     arg = args[i]
+    #     if arg.startswith("-"):
+    #         i += 1
+    #         flagged[arg[1:]] = args[i]
+    #     else:
+    #         ordered.append(arg)
+    #     i += 1
+    # return flagged, ordered
 
 completer_scripts = dict()
 def complete_command(args):
@@ -99,6 +99,7 @@ def complete_command(args):
         completer_scripts.pop(args[1])
 
 def jobs_command(args):
+    pass
 
 builtin_commands = {
     "exit": exit_command,
