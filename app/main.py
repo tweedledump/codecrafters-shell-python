@@ -13,11 +13,11 @@ completer_scripts = dict()
 jobs=list()
 job_number = 1
 class Job():
-    def __init__(self, job_num, pid, command_string):
+    def __init__(self, job_num, process, command_string):
         global job_number
-        self.pid = pid
+        self.pid = process.pid
+        self.process = process
         self.command_string = command_string
-        self.status = "Running"
         self.job_number = job_num
         job_number += 1
 
@@ -108,9 +108,13 @@ def complete_command(args):
         completer_scripts.pop(args[1])
 
 def jobs_command(args):
-    for j in jobs:
+    for j in jobs[:]:
+        should_reap = j.process.poll() is not None
         recency = "+" if j is jobs[-1] else "-" if j is jobs[-2] else " "
-        print(f"[{j.job_number}]{recency}  {j.status.ljust(24)}{j.command_string}")
+        print(f"[{j.job_number}]{recency}  {('Done' if should_reap else 'Running').ljust(24)}{j.command_string[:-1] if should_reap else j.command_string}")
+        if should_reap:
+            jobs.remove(j)
+    
 
 builtin_commands = {
     "exit": exit_command,
@@ -268,7 +272,7 @@ def evaluate_command(command_string):
                         stderr=err if err_path else None,
                     )
                     print(f"[{job_number}] {p.pid}")
-                    jobs.append(Job(job_number, p.pid, command_string))
+                    jobs.append(Job(job_number, p, command_string))
                 else:
                     subprocess.run(
                         [command, *args],
