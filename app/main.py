@@ -10,7 +10,16 @@ STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
 global_commands = None
 completer_scripts = dict()
+jobs=list()
 job_number = 1
+class Job():
+    def __init__(self, job_num, pid, command_string):
+        global job_number
+        self.pid = pid
+        self.command_string = command_string
+        self.status = "Running"
+        self.job_number = job_num
+        job_number += 1
 
 def handle_invalid_command(command):
     print(f"{command}: command not found")
@@ -99,7 +108,8 @@ def complete_command(args):
         completer_scripts.pop(args[1])
 
 def jobs_command(args):
-    pass
+    for j in jobs:
+        print(f"[{j.job_number}]+  {j.status.ljust(24)}{j.command_string}")
 
 builtin_commands = {
     "exit": exit_command,
@@ -257,7 +267,7 @@ def evaluate_command(command_string):
                         stderr=err if err_path else None,
                     )
                     print(f"[{job_number}] {p.pid}")
-                    job_number += 1
+                    jobs.append(Job(job_number, p.pid, command_string))
                 else:
                     subprocess.run(
                         [command, *args],
