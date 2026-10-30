@@ -257,18 +257,12 @@ def background_pass(peeled):
 def handle_pipeline(command_stages):
     prev_proc = None
     for command_stage in command_stages:
-        proc = subprocess.Popen(command_stage, text=True, stdout=subprocess.PIPE, stdin = prev_proc.stdout if prev_proc else None)
+        proc = subprocess.Popen(command_stage, stdout=subprocess.PIPE, stdin = prev_proc.stdout if prev_proc else None)
         if prev_proc:
             prev_proc.stdout.close()
         prev_proc = proc
-        
-    # p2 = subprocess.Popen(command_stages[1], text=True, stdin = p1.stdout, stdout=subprocess.PIPE)
-    output = prev_proc.communicate()[0]
-    print(output)
-    # for stage_num, stage_command in enumerate(command_stages):
-    #     (r,w) = os.pipe()
-    #     command_tokens = lex(stage_command)
-    #     proc = subprocess.Popen(command_tokens, stdin)
+    stdout, _stderr = prev_proc.communicate()
+    print(stdout.decode('utf-8').strip())
 
 
 def evaluate_command(command_string):
