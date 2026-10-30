@@ -71,7 +71,7 @@ def cd_command(args):
         else:
             print(f"cd: {arg}: No such file or directory")    
 
-def parse_args(args):
+# def parse_args(args):
     flagged = dict()
     ordered = []
     i = 0
@@ -98,13 +98,16 @@ def complete_command(args):
     elif args[0] == "-r":
         completer_scripts.pop(args[1])
 
+def jobs_command(args):
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
     "type": type_command,
     "pwd": pwd_command,
     "cd": cd_command,
-    "complete": complete_command
+    "complete": complete_command,
+    "jobs": jobs_command
 }
 def register_commands():
     global global_commands
