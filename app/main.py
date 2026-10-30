@@ -95,6 +95,8 @@ def complete_command(args):
             print(f"complete: {args[1]}: no completion specification")
     elif args[0] == "-C":
         completer_scripts[args[2]] = args[1]
+    elif args[0] == "-r":
+        completer_scripts.pop(args[1])
 
 builtin_commands = {
     "exit": exit_command,
@@ -121,7 +123,6 @@ def completer(text, state):
     if buffer_tokens[0] in completer_scripts:
         if state == 0:
             result = subprocess.run(
-                        # [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] ],
                         [completer_scripts[buffer_tokens[0]], buffer_tokens[0], text, buffer_tokens[-2] if len(buffer_tokens) > 1 else "" ],
                         capture_output=True,  # Captures both stdout and stderr
                         text=True,  
@@ -130,9 +131,7 @@ def completer(text, state):
                             "COMP_POINT": str(len(buffer))
                         }   
                         )
-            # completer._cleaned = sorted([line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)])
             completer._cleaned = [line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)]
-            # print(completer._cleaned)
         try: 
             return completer._cleaned[state]
         except:
