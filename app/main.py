@@ -256,7 +256,7 @@ def evaluate_command(command_string):
                         stdout=out if out_path else None,  # open file, or None = inherit
                         stderr=err if err_path else None,
                     )
-                    print(job_number, p.pid)
+                    print(f"[{job_number}] {p.pid}")
                     job_number += 1
                 else:
                     subprocess.run(
