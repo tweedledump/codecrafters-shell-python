@@ -261,9 +261,11 @@ def handle_pipeline(command_stages):
         if prev_proc:
             prev_proc.stdout.close()
         prev_proc = proc
-    stdout, _stderr = prev_proc.wait()
-    print(stdout.decode('utf-8').rstrip())
-
+    # stdout, _stderr = prev_proc.communicate()
+    # print(stdout.decode('utf-8').rstrip())
+    for line in proc.stdout:
+        print(line.decode('utf-8').rstrip())
+    proc.wait()
 
 def evaluate_command(command_string):
     raw_tokens = lex(command_string)     
