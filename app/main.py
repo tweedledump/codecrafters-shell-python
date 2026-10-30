@@ -18,6 +18,7 @@ PATH_DIRS = os.environ.get("PATH", "").split(":")
 
 global_commands = None
 completer_scripts = dict()
+history=list()
 
 jobs=list()
 class Job():
@@ -129,8 +130,10 @@ def jobs_command(autoreap=False):
         if should_reap:
             jobs.remove(j)
     
-def history_command():
-    pass
+def history_command(_args):
+    for i, command in enumerate(history):
+        print(f"{str(i+1).rjust(5)}  {command}")
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
@@ -286,6 +289,7 @@ def handle_pipeline(command_stages):
             print(line.decode('utf-8').rstrip())
 
 def evaluate_command(command_string):
+    history.append(command_string)
     if "|" in command_string:
         commands = command_string.split("|")
         lexed = [lex(command) for command in commands]
