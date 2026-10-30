@@ -20,7 +20,7 @@ class Job():
         if len(jobs) == 0:
             Job.job_counter = 1
         else: 
-            Job.job_counter += 1
+            Job.job_counter = 1 + max(j.job_number for j in jobs)
         self.job_number = Job.job_counter
 
 def handle_invalid_command(command):
