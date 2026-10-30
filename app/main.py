@@ -9,7 +9,8 @@ STDOUT = sys.stdout
 STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
 global_commands = None
-
+completer_scripts = dict()
+job_number = 1
 
 def handle_invalid_command(command):
     print(f"{command}: command not found")
@@ -85,7 +86,6 @@ def cd_command(args):
     #     i += 1
     # return flagged, ordered
 
-completer_scripts = dict()
 def complete_command(args):
     # flagged, _ordered = parse_args(args)
     if args[0] == "-p":
@@ -225,10 +225,17 @@ def peel_redirects(raw):
         i += 1 
     return peeled, out_path, append_out, err_path, append_err
 
+def background_pass(peeled):
+    if peeled[-1] == "&":
+        return True, peeled[:-1]
+    else:
+        return False, peeled
+
 def evaluate_command(command_string):
     raw_tokens = lex(command_string)
     peeled_tokens, out_path, append_out, err_path, append_err = peel_redirects(raw_tokens)
-    command, *args = peeled_tokens
+    should_fork, bg_tokens =background_pass(peeled_tokens)
+    command, *args = bg_tokens
     #set io context
     out = open(out_path, "a" if append_out else "w") if out_path else nullcontext()
     err = open(err_path, "a" if append_err else "w") if err_path else nullcontext()
@@ -238,15 +245,26 @@ def evaluate_command(command_string):
     ):
         if command in builtin_commands:
             builtin_commands[command](args)
+            # spawn a subshell to handle background 
         else:
             executable = find_executable([command])
             if executable:
-                subprocess.run(
-                    [command, *args],
-                    executable=executable,
-                    stdout=out if out_path else None,  # open file, or None = inherit
-                    stderr=err if err_path else None,
-                )
+                if should_fork:
+                    global job_number
+                    p = subprocess.Popen([command, *args],
+                        executable=executable,
+                        stdout=out if out_path else None,  # open file, or None = inherit
+                        stderr=err if err_path else None,
+                    )
+                    print(job_number, p.pid)
+                    job_number += 1
+                else:
+                    subprocess.run(
+                        [command, *args],
+                        executable=executable,
+                        stdout=out if out_path else None,  # open file, or None = inherit
+                        stderr=err if err_path else None,
+                    )
             else:                               
                 handle_invalid_command(command_string)
 
