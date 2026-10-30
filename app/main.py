@@ -130,9 +130,11 @@ def jobs_command(autoreap=False):
         if should_reap:
             jobs.remove(j)
     
-def history_command(_args):
+def history_command(args):
+    limit = int(args[0])
     for i, command in enumerate(history):
-        print(f"{str(i+1).rjust(5)}  {command}")
+        if i >= (len(history) - limit):
+            print(f"{str(i+1).rjust(5)}  {command}")
 
 builtin_commands = {
     "exit": exit_command,
