@@ -132,7 +132,7 @@ def completer(text, state):
                         )
             # completer._cleaned = sorted([line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)])
             completer._cleaned = [line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)]
-            print(completer._cleaned)
+            # print(completer._cleaned)
         try: 
             return completer._cleaned[state]
         except:
