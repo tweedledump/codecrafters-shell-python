@@ -130,7 +130,7 @@ def completer(text, state):
                             "COMP_POINT": str(len(buffer))
                         }   
                         )
-            completer._cleaned = sorted([line.strip() + " " for line in result.stdout.splitlines() if line.startswith(text)])
+            completer._cleaned = sorted([line.strip() + " " for line in result.stdout.splitlines() if line.strip() and line.startswith(text)])
         try: 
             return completer._cleaned[state]
         except:
