@@ -11,15 +11,17 @@ PATH_DIRS = os.environ.get("PATH", "").split(":")
 global_commands = None
 completer_scripts = dict()
 jobs=list()
-job_number = 1
 class Job():
-    def __init__(self, job_num, process, command_string):
-        global job_number
+    job_counter = 1
+    def __init__(self, process, command_string):
         self.pid = process.pid
         self.process = process
         self.command_string = command_string
-        self.job_number = job_num
-        job_number += 1
+        if len(jobs) == 0:
+            Job.job_counter = 1
+        else: 
+            Job.job_counter += 1
+        self.job_number = Job.job_counter
 
 def handle_invalid_command(command):
     print(f"{command}: command not found")
@@ -111,7 +113,8 @@ def jobs_command(autoreap=False):
     for j in jobs[:]:
         should_reap = j.process.poll() is not None
         recency = "+" if j is jobs[-1] else "-" if j is jobs[-2] else " "
-        if not autoreap or (autoreap and should_reap):
+        # if not autoreap or (autoreap and should_reap):
+        if (not autoreap) or should_reap:
             print(f"[{j.job_number}]{recency}  {('Done' if should_reap else 'Running').ljust(24)}{j.command_string[:-1] if should_reap else j.command_string}")
         
         if should_reap:
@@ -250,7 +253,9 @@ def background_pass(peeled):
         return False, peeled
 
 def evaluate_command(command_string):
-    raw_tokens = lex(command_string)
+    if command_string.strip() == "":
+        return
+    raw_tokens = lex(command_string)     
     peeled_tokens, out_path, append_out, err_path, append_err = peel_redirects(raw_tokens)
     should_fork, bg_tokens =background_pass(peeled_tokens)
     command, *args = bg_tokens
@@ -274,8 +279,9 @@ def evaluate_command(command_string):
                         stdout=out if out_path else None,  # open file, or None = inherit
                         stderr=err if err_path else None,
                     )
-                    print(f"[{job_number}] {p.pid}")
-                    jobs.append(Job(job_number, p, command_string))
+                    new_job = Job(p, command_string)
+                    jobs.append(new_job)
+                    print(f"[{new_job.job_number}] {new_job.pid}")
                 else:
                     subprocess.run(
                         [command, *args],
