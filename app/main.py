@@ -131,9 +131,12 @@ def jobs_command(autoreap=False):
             jobs.remove(j)
     
 def history_command(args):
-    limit = int(args[0])
+    if len(args) == 0:
+        limit = None
+    else:
+        limit = int(args[0])
     for i, command in enumerate(history):
-        if i >= (len(history) - limit):
+        if not limit or i >= len(history) - limit:
             print(f"{str(i+1).rjust(5)}  {command}")
 
 builtin_commands = {
