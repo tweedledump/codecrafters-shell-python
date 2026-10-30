@@ -255,10 +255,15 @@ def background_pass(peeled):
         return False, peeled
 
 def handle_pipeline(command_stages):
-    p1 = subprocess.Popen(command_stages[0], stdout=subprocess.PIPE)
-    p2 = subprocess.Popen(command_stages[1], stdin = p1.stdout, stdout=subprocess.PIPE)
-    p1.stdout.close()
-    output = p2.communicate()[0]
+    prev_proc = None
+    for command_stage in command_stages:
+        proc = subprocess.Popen(command_stage, text=True, stdout=subprocess.PIPE, stdin = prev_proc.stdout if prev_proc else None)
+        if prev_proc:
+            prev_proc.stdout.close()
+        prev_proc = proc
+        
+    # p2 = subprocess.Popen(command_stages[1], text=True, stdin = p1.stdout, stdout=subprocess.PIPE)
+    output = prev_proc.communicate()[0]
     print(output)
     # for stage_num, stage_command in enumerate(command_stages):
     #     (r,w) = os.pipe()
