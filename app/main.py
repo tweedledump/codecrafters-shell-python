@@ -262,7 +262,7 @@ def handle_pipeline(command_stages):
             prev_proc.stdout.close()
         prev_proc = proc
     stdout, _stderr = prev_proc.communicate()
-    print(stdout.decode('utf-8').strip())
+    print(stdout.decode('utf-8').rstrip())
 
 
 def evaluate_command(command_string):
