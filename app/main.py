@@ -141,7 +141,7 @@ def history_command(args):
     elif args[0] == "-w":
         history_path = args[1]
         with open(history_path, "w") as history_file:
-            history_file.write("\n".join(history))
+            history_file.write("\n".join(history)+"\n")
         return 
     else:
         limit = int(args[0])
