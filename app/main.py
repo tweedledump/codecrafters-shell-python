@@ -182,7 +182,7 @@ def declare_command(args):
         if is_valid_identifier(name):
             variables[name] = value
         else:
-            print(f"declare: {args[0]}: not a valid identifier")
+            print(f"declare: `{args[0]}`: not a valid identifier")
 
 
 builtin_commands = {
