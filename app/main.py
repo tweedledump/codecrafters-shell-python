@@ -326,13 +326,13 @@ def expand_braces(string):
             tokens.append(current_token)
             in_var = True
             current_token = "$"
-            i++
+            i+=1
         elif string[i] is "}" and in_var:
             tokens.append(current_token)
             in_var = False
         else:
             current_token += (string[i])
-        i++
+        i+=1
     if current_token:
         tokens.append(current_token)
     expanded = expand_variables(tokens)
