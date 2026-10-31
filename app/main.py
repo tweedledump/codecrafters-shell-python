@@ -15,6 +15,7 @@ IS_MAC = sys.platform == "darwin"
 STDOUT = sys.stdout
 STDERR = sys.stderr
 PATH_DIRS = os.environ.get("PATH", "").split(":")
+HISTFILE = os.environ.get("HISTFILE", "./hist.shh")
 
 global_commands = None
 completer_scripts = dict()
@@ -158,6 +159,9 @@ def history_command(args):
         if not limit or i >= len(history) - limit:
             print(f"{str(i+1).rjust(5)}  {command}")
 history_command._already_appended = []
+
+def load_history():
+    history_command(["-r", HISTFILE])
 
 builtin_commands = {
     "exit": exit_command,
@@ -363,6 +367,7 @@ def run_repl():
 
 def main():
     setup_readline()
+    load_history()
     while True:
         run_repl()
     
