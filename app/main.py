@@ -168,6 +168,9 @@ def load_history():
 def save_history():
     if HISTFILE: history_command(["-a", HISTFILE])
 
+def is_valid_identifier(name):
+    return name.isidentifier()
+
 def declare_command(args):
     if args[0] == "-p":
         if args[1] in variables:
@@ -176,7 +179,10 @@ def declare_command(args):
             print(f"declare: {args[1]}: not found")
     if "=" in args[0]:
         name, value = args[0].split("=")
-        variables[name] = value
+        if is_valid_identifier(name):
+            variables[name] = value
+        else:
+            print(f"declare: {args[0]}: not a valid identifier")
 
 
 builtin_commands = {
