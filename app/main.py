@@ -5,7 +5,7 @@ import subprocess
 from contextlib import redirect_stdout, redirect_stderr, nullcontext
 
 def handle_unraisable(args): #CI garbage collection is too aggressive and creates CI specific errors.
-    if isinstance(args.exc_value, OSError) and args.exc_value.errno == 9:
+    if isinstance(args.exc_value, OSError) and args.exc_value.errno == 9: # I use both a high level wrapper and its low level file descriptor. I manually close fd, but CI garbage collection freaks out about not closing the high level. detach didn't work see handle_pipeline()
         return # just avoid this one error
     sys.__unraisablehook__(args)
 
@@ -133,6 +133,11 @@ def jobs_command(autoreap=False):
 def history_command(args):
     if len(args) == 0:
         limit = None
+    elif args[0] == "-r":
+        history_path = args[1]
+        with open(history_path, "r") as history_file:
+            history.extend([h.rstrip() for h in history_file if h])
+        return # no printing
     else:
         limit = int(args[0])
     for i, command in enumerate(history):
