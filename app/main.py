@@ -318,12 +318,35 @@ def background_pass(peeled):
     else:
         return False, peeled
 
+def expand_braces(string):
+    tokens, i = [], 0
+    current_token, in_var = "", False
+    while i< len(string):
+        if string[i] == "$" and string[i+1] == "{":
+            tokens.append(current_token)
+            in_var = True
+            current_token = "$"
+            i++
+        elif string[i] is "}" and in_var:
+            tokens.append(current_token)
+            in_var = False
+        else:
+            current_token += (string[i])
+        i++
+    if current_token:
+        tokens.append(current_token)
+    expanded = expand_variables(tokens)
+    return expanded
+
 def expand_variables(tokens):
     expanded = []
     for token in tokens:
         if "$" in token:
-            prefix, expandable = token.split("$")
-            expanded.append(prefix + variables.get(expandable, ""))
+            if "${" in token:
+
+            else:    
+                prefix, expandable = token.split("$")
+                expanded.append(prefix + variables.get(expandable, ""))
         else:
             expanded.append(token)   
     return expanded    
