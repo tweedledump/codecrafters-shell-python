@@ -7,7 +7,7 @@ from contextlib import redirect_stdout, redirect_stderr, nullcontext
 def handle_unraisable(args): #CI garbage collection is too aggressive and creates CI specific errors.
     if isinstance(args.exc_value, OSError) and args.exc_value.errno == 9: # I use both a high level wrapper and its low level file descriptor. I manually close fd, but CI garbage collection freaks out about not closing the high level. detach didn't work see handle_pipeline()
         return # just avoid this one error
-    sys.__unraisablehook__(args)\
+    sys.__unraisablehook__(args)
 sys.unraisablehook = handle_unraisable
 
 IS_MAC = sys.platform == "darwin"
