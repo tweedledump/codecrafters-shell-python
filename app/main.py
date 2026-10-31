@@ -324,8 +324,8 @@ def expand_variables(tokens):
         if token.startswith("$"):
             expanded.append(variables.get(token[1:], ""))
         else:
-            expanded.append(token)
-            
+            expanded.append(token)   
+    return expanded    
 
 def expand(tokens):
     vars_tokens = expand_variables(tokens)
@@ -352,10 +352,6 @@ def handle_pipeline(command_stages):
     with os.fdopen(prev_read_end, "rb") as stream:
         for line in stream:
             print(line.decode('utf-8').rstrip())
-
-
-
-
 
 def evaluate_command(command_string):
     history.append(command_string)
