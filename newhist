@@ -1,0 +1,3 @@
+echo hey
+echo worl
+history -w ./newhist

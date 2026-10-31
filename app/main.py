@@ -137,7 +137,12 @@ def history_command(args):
         history_path = args[1]
         with open(history_path, "r") as history_file:
             history.extend([h.rstrip() for h in history_file if h])
-        return # no printing
+        return
+    elif args[0] == "-w":
+        history_path = args[1]
+        with open(history_path, "w") as history_file:
+            history_file.write("\n".join(history))
+        return 
     else:
         limit = int(args[0])
     for i, command in enumerate(history):
