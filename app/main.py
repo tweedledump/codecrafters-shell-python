@@ -18,10 +18,9 @@ HISTFILE = os.environ.get("HISTFILE", "")
 
 global_commands = None
 completer_scripts = dict()
-
 history=list()
-
 jobs=list()
+variables = dict()
 class Job():
     job_counter = 1
     def __init__(self, process, command_string):
@@ -169,8 +168,13 @@ def load_history():
 def save_history():
     if HISTFILE: history_command(["-a", HISTFILE])
 
-def declare_command():
-    pass
+def declare_command(args):
+    if args[0] == "-p":
+        if args[1] in variables:
+            pass
+        else: 
+            print(f"declare: {args[1]}: not found")
+
 
 builtin_commands = {
     "exit": exit_command,
