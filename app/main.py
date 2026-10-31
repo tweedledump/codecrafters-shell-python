@@ -363,8 +363,9 @@ def evaluate_command(command_string):
         commands = command_string.split("|")
         lexed = [lex(command) for command in commands]
         return handle_pipeline(lexed)
-    raw_tokens = lex(command_string)     
-    peeled_tokens, out_path, append_out, err_path, append_err = peel_redirects(raw_tokens)
+    raw_tokens = lex(command_string) 
+    expanded = expand(raw_tokens)    
+    peeled_tokens, out_path, append_out, err_path, append_err = peel_redirects(expanded)
     is_background, bg_tokens = background_pass(peeled_tokens)
     command, *args = bg_tokens
     #set io context
