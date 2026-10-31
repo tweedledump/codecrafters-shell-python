@@ -318,6 +318,19 @@ def background_pass(peeled):
     else:
         return False, peeled
 
+def expand_variables(tokens):
+    expanded = []
+    for token in tokens:
+        if token.startswith("$"):
+            expanded.append(variables.get(token[1:], ""))
+        else:
+            expanded.append(token)
+            
+
+def expand(tokens):
+    vars_tokens = expand_variables(tokens)
+    return vars_tokens
+
 def handle_pipeline(command_stages):
     prev_read_end = None
     prev_write_end = None
@@ -339,6 +352,10 @@ def handle_pipeline(command_stages):
     with os.fdopen(prev_read_end, "rb") as stream:
         for line in stream:
             print(line.decode('utf-8').rstrip())
+
+
+
+
 
 def evaluate_command(command_string):
     history.append(command_string)
