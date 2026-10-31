@@ -7,8 +7,7 @@ from contextlib import redirect_stdout, redirect_stderr, nullcontext
 def handle_unraisable(args): #CI garbage collection is too aggressive and creates CI specific errors.
     if isinstance(args.exc_value, OSError) and args.exc_value.errno == 9: # I use both a high level wrapper and its low level file descriptor. I manually close fd, but CI garbage collection freaks out about not closing the high level. detach didn't work see handle_pipeline()
         return # just avoid this one error
-    sys.__unraisablehook__(args)
-
+    sys.__unraisablehook__(args)\
 sys.unraisablehook = handle_unraisable
 
 IS_MAC = sys.platform == "darwin"
@@ -19,6 +18,7 @@ HISTFILE = os.environ.get("HISTFILE", "")
 
 global_commands = None
 completer_scripts = dict()
+
 history=list()
 
 jobs=list()
@@ -38,6 +38,7 @@ def handle_invalid_command(command):
     print(f"{command}: command not found")
 
 def exit_command(_args):
+    save_history()
     sys.exit(0)
 
 def echo_command(args):
@@ -137,7 +138,9 @@ def history_command(args):
     elif args[0] == "-r":
         history_path = args[1]
         with open(history_path, "r") as history_file:
-            history.extend([h.rstrip() for h in history_file if h])
+            loaded = [h.rstrip() for h in history_file if h]
+            history.extend(loaded)
+            history_command._already_appended.extend(loaded)
         return
     elif args[0] == "-w":
         history_path = args[1]
@@ -161,8 +164,10 @@ def history_command(args):
 history_command._already_appended = []
 
 def load_history():
-    if HISTFILE:
-        history_command(["-r", HISTFILE])
+    if HISTFILE: history_command(["-r", HISTFILE])
+
+def save_history():
+    if HISTFILE: history_command(["-a", HISTFILE])
 
 builtin_commands = {
     "exit": exit_command,
