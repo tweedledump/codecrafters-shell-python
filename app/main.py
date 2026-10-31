@@ -171,9 +171,12 @@ def save_history():
 def declare_command(args):
     if args[0] == "-p":
         if args[1] in variables:
-            pass
+            print(f"declare -- {args[1]}=\"{variables[args[1]]}\"")
         else: 
             print(f"declare: {args[1]}: not found")
+    if "=" in args[0]:
+        name, value = args[0].split("=")
+        variables[name] = value
 
 
 builtin_commands = {
