@@ -150,6 +150,7 @@ def history_command(args):
             new_appendages.remove(aa)
         with open(history_path, "a") as history_file:
             history_file.write("\n".join(new_appendages)+"\n")
+        history_command._already_appended.extend(new_appendages)
         return 
     else:
         limit = int(args[0])
