@@ -1,3 +1,5 @@
 echo hey
 echo worl
-history -w ./newhist
+history -w ./newhistecho new
+echo stuff
+history -a ./newhist

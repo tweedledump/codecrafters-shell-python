@@ -142,12 +142,21 @@ def history_command(args):
         history_path = args[1]
         with open(history_path, "w") as history_file:
             history_file.write("\n".join(history)+"\n")
+        return
+    elif args[0] == "-a":
+        history_path = args[1]
+        new_appendages = history[:]
+        for aa in history_command._already_appended:
+            new_appendages.remove(aa)
+        with open(history_path, "a") as history_file:
+            history_file.write("\n".join(new_appendages)+"\n")
         return 
     else:
         limit = int(args[0])
     for i, command in enumerate(history):
         if not limit or i >= len(history) - limit:
             print(f"{str(i+1).rjust(5)}  {command}")
+history_command._already_appended = []
 
 builtin_commands = {
     "exit": exit_command,
