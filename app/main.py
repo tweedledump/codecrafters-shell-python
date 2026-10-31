@@ -321,8 +321,9 @@ def background_pass(peeled):
 def expand_variables(tokens):
     expanded = []
     for token in tokens:
-        if token.startswith("$"):
-            expanded.append(variables.get(token[1:], ""))
+        if "$" in token:
+            prefix, expandable = token.split("$")
+            expanded.append(prefix + variables.get(expandable, ""))
         else:
             expanded.append(token)   
     return expanded    
