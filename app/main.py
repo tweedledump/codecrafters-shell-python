@@ -350,7 +350,7 @@ def expand_variables(tokens):
                 expanded.append(prefix + variables.get(expandable, ""))
         else:
             expanded.append(token)   
-    return expanded    
+    return [e for e in expanded if e]
 
 def expand(tokens):
     vars_tokens = expand_variables(tokens)
