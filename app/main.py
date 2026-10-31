@@ -343,7 +343,7 @@ def expand_variables(tokens):
     for token in tokens:
         if "$" in token:
             if "${" in token:
-
+                expanded.append(expand_braces(token))
             else:    
                 prefix, expandable = token.split("$")
                 expanded.append(prefix + variables.get(expandable, ""))
