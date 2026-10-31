@@ -169,6 +169,9 @@ def load_history():
 def save_history():
     if HISTFILE: history_command(["-a", HISTFILE])
 
+def declare_command():
+    pass
+
 builtin_commands = {
     "exit": exit_command,
     "echo": echo_command,
@@ -177,7 +180,8 @@ builtin_commands = {
     "cd": cd_command,
     "complete": complete_command,
     "jobs": jobs_command,
-    "history": history_command
+    "history": history_command,
+    "declare": declare_command
 }
 def register_commands():
     global global_commands
